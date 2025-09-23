@@ -39,8 +39,10 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    if not email or not password:
-        return jsonify({"error": "Missing email or password"}), 400
+    if not email: 
+          return jsonify({"error": "Missing email"}), 400
+    elif not password:
+          return jsonify({"error": "Missing password"}), 400
 
     user = User.query.filter_by(email=email).first()
 
