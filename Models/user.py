@@ -8,6 +8,16 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=True)
     password = db.Column(db.String(255), nullable=True)
 
+class Player(db.Model):
+    __tablename__ = "players"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    money = db.Column(db.Integer, default=1500)
+    position = db.Column(db.Integer, default=0)
+    in_jail = db.Column(db.Boolean, default=False)
+    board_id = db.Column(db.Integer, db.ForeignKey("board.id"))
+    laps = db.Column(db.Integer, default=0)
+
 
 class Property(db.Model):
     __tablename__ = "properties"
