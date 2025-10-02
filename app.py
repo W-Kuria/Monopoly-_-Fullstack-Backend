@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 from dotenv import load_dotenv
 from Models import db
 import os
@@ -17,6 +18,9 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    # Enable CORS (for all routes and origins by default)
+    CORS(app)
+
     # Init extensions
     db.init_app(app)
     migrate.init_app(app, db)
@@ -27,9 +31,8 @@ def create_app():
 
     return app
 
-# Import models so Flask-Migrate can see them
+# Import models so Flask-Migrate can detect them
 from Models import user
-
 
 
 if __name__ == "__main__":
