@@ -17,9 +17,9 @@ def create_app():
         
         # Register blueprints
         from app.routes.auth import auth_bp
-        from app.routes.game import game_bp  # Add this line
+        # from app.routes.game import game_bp  
         
         app.register_blueprint(auth_bp)
-        app.register_blueprint(game_bp)  # Add this line
+        # app.register_blueprint(game_bp)  
         
         return app
