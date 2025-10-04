@@ -1,4 +1,7 @@
-ALTER TABLE players ADD COLUMN is_active BOOLEAN DEFAULT true;
+ALTER TABLE games ADD COLUMN current_turn INTEGER DEFAULT 0;
+
+
+-- ALTER TABLE players ADD COLUMN is_active BOOLEAN DEFAULT true;
 
 
 -- INSERT INTO board (position, name, type) VALUES

@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from app import db
-from Models.game import Game
 from Models.user import *
 import random
 
@@ -41,14 +40,12 @@ def create_game():
     db.session.commit()
 
     return jsonify({
-        "message": "Game created",
-        "game": {
-            "id": new_game.id,    # ✅ guaranteed id now
-            "status": new_game.status,
-            "player_count": new_game.player_count,
-        },
-        "players": [{"id": p.id, "name": p.name, "money": p.money} for p in players]
-    })
+    "id": new_game.id,
+    "status": new_game.status,
+    "player_count": new_game.player_count,
+    "players": [{"id": p.id, "name": p.name, "money": p.money} for p in players]
+})
+
 
 
 
@@ -105,3 +102,17 @@ def roll_dice(game_id):
             "money": player.money
         }
     })
+@game_bp.route("/user/<int:user_id>", methods=["GET"])
+def get_user_games(user_id):
+    games = Game.query.filter_by(created_by=user_id).all()
+    
+    return jsonify([
+        {
+            "id": game.id,
+            "status": game.status,
+            "player_count": game.player_count,
+            "current_turn": game.current_turn,
+            "created_at": game.created_at.isoformat() if game.created_at else None
+        }
+        for game in games
+    ])
