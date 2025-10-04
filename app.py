@@ -19,7 +19,7 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Enable CORS (for all routes and origins by default)
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
     # Init extensions
     db.init_app(app)
@@ -27,12 +27,14 @@ def create_app():
 
     # Register blueprints
     from Routes.auth import auth_bp
+    from Routes.game import game_bp
     app.register_blueprint(auth_bp)
+    app.register_blueprint(game_bp)
 
     return app
 
 # Import models so Flask-Migrate can detect them
-from Models import user
+from Models import *
 
 
 if __name__ == "__main__":

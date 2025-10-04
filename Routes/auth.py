@@ -36,6 +36,9 @@ def register():
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
+
+    print("DEBUG: /auth/login payload:", data)
+
     email = data.get("email")
     password = data.get("password")
 
