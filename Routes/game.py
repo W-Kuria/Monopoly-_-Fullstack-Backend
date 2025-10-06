@@ -83,7 +83,6 @@ def roll_dice(game_id):
     if not player:
         return jsonify({"error": "Player not found"}), 404
 
-    import random
     dice1, dice2 = random.randint(1, 6), random.randint(1, 6)
     move = dice1 + dice2
 
@@ -114,11 +113,6 @@ def roll_dice(game_id):
         "current_player": {"id": player.id, "name": player.name},
         "dice": [dice1, dice2],
     }
-
-    return jsonify({"message": f"{player.name} rolled {dice1} + {dice2}",
-                    "dice": [dice1, dice2],
-                    "game": game_data}), 200
-
 
     # Determine next player turn
     players = Player.query.filter_by(game_id=game.id).order_by(Player.id).all()
@@ -152,7 +146,11 @@ def roll_dice(game_id):
         ]
     }
 
-    return jsonify(response), 200
+    return jsonify({
+        "message": f"{player.name} rolled {dice1} + {dice2}",
+        "dice": [dice1, dice2],
+        "game": game_data
+    },response), 200
 
 
 
