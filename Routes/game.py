@@ -99,6 +99,27 @@ def roll_dice(game_id):
     player.position = new_position
     db.session.commit()
 
+    # Return updated data
+    game_data = {
+        "id": game.id,
+        "players": [
+            {
+                "id": p.id,
+                "name": p.name,
+                "position": p.position,
+                "money": p.money,
+                "laps": p.laps,
+            } for p in game.players
+        ],
+        "current_player": {"id": player.id, "name": player.name},
+        "dice": [dice1, dice2],
+    }
+
+    return jsonify({"message": f"{player.name} rolled {dice1} + {dice2}",
+                    "dice": [dice1, dice2],
+                    "game": game_data}), 200
+
+
     # Determine next player turn
     players = Player.query.filter_by(game_id=game.id).order_by(Player.id).all()
     current_index = next((i for i, p in enumerate(players) if p.id == player.id), 0)
