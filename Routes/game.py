@@ -146,12 +146,7 @@ def roll_dice(game_id):
         ]
     }
 
-    return jsonify({
-        "message": f"{player.name} rolled {dice1} + {dice2}",
-        "dice": [dice1, dice2],
-        "game": game_data
-    },response), 200
-
+    return jsonify(response), 200
 
 
 @game_bp.route("/user/<int:user_id>", methods=["GET"])
