@@ -165,3 +165,123 @@ def get_board(game_id):
         for t in tiles
     ])
 
+# 💰 Buy property
+@game_bp.route("/<int:game_id>/buy", methods=["POST"])
+def buy_property(game_id):
+    data = request.get_json()
+    player_id = data.get("player_id")
+    tile_pos = data.get("tile_position")
+
+    player = Player.query.filter_by(id=player_id, game_id=game_id).first()
+    tile = Board.query.filter_by(position=tile_pos).first()
+
+    if not tile or tile.type != "property":
+        return jsonify({"error": "Not a property"}), 400
+
+    if tile.price > player.money:
+        return jsonify({"error": "Not enough money"}), 400
+
+    player.money -= tile.price
+    tile.owner_id = player.id  # Add this column in Board model if missing
+    db.session.commit()
+
+    return jsonify({
+        "message": f"{player.name} bought {tile.name} for ${tile.price}",
+        "player_money": player.money
+    })
+
+
+# 🎲 Chance card
+@game_bp.route("/<int:game_id>/chance", methods=["POST"])
+def draw_chance(game_id):
+    player_id = request.json.get("player_id")
+    player = Player.query.filter_by(id=player_id, game_id=game_id).first()
+
+    cards = [
+        {"message": "Advance to GO! Collect $200", "money": +200, "move": -player.position},
+        {"message": "Bank pays you dividend of $50", "money": +50},
+        {"message": "Pay school fees of $150", "money": -150},
+        {"message": "Go to Jail! Do not pass GO", "jail": True}
+    ]
+
+    card = random.choice(cards)
+    log = card["message"]
+
+    if "money" in card:
+        player.money += card["money"]
+    if "move" in card:
+        player.position = (player.position + card["move"]) % 40
+    if "jail" in card:
+        player.position = 10  # Jail position
+
+    db.session.commit()
+
+    return jsonify({"card": log, "player": {
+        "id": player.id, "money": player.money, "position": player.position
+    }})
+
+
+# 💳 Community Chest
+@game_bp.route("/<int:game_id>/community", methods=["POST"])
+def draw_community(game_id):
+    player_id = request.json.get("player_id")
+    player = Player.query.filter_by(id=player_id, game_id=game_id).first()
+
+    cards = [
+        {"message": "You inherit $100", "money": +100},
+        {"message": "Pay hospital fees of $100", "money": -100},
+        {"message": "From sale of stock you get $50", "money": +50},
+        {"message": "Go directly to Jail", "jail": True}
+    ]
+
+    card = random.choice(cards)
+    log = card["message"]
+
+    if "money" in card:
+        player.money += card["money"]
+    if "jail" in card:
+        player.position = 10  # Jail
+    db.session.commit()
+
+    return jsonify({"card": log, "player": {
+        "id": player.id, "money": player.money, "position": player.position
+    }})
+
+
+# 🚨 Jail route
+@game_bp.route("/<int:game_id>/jail", methods=["POST"])
+def handle_jail(game_id):
+    data = request.get_json()
+    player_id = data.get("player_id")
+    action = data.get("action")  # 'pay', 'skip', 'card'
+    player = Player.query.filter_by(id=player_id, game_id=game_id).first()
+
+    if action == "pay":
+        if player.money >= 50:
+            player.money -= 50
+            db.session.commit()
+            return jsonify({"message": "Paid $50 and released", "player": {"money": player.money}})
+        return jsonify({"error": "Not enough money"}), 400
+
+    elif action == "skip":
+        # player skips one turn — you could track skipped_turns in the DB
+        return jsonify({"message": f"{player.name} skips this turn."})
+
+    elif action == "card":
+        return jsonify({"message": f"{player.name} used a Get Out of Jail card!"})
+
+    return jsonify({"error": "Invalid action"}), 400
+
+
+# 💀 Bankruptcy
+@game_bp.route("/<int:game_id>/bankrupt", methods=["POST"])
+def bankrupt_player(game_id):
+    player_id = request.json.get("player_id")
+    player = Player.query.filter_by(id=player_id, game_id=game_id).first()
+
+    player.money = 0
+    player.position = -1  # off board
+    db.session.commit()
+
+    return jsonify({"message": f"{player.name} is bankrupt and out of the game!"})    
+
