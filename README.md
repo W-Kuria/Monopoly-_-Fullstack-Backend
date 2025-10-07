@@ -36,35 +36,38 @@ This is the **backend server** for the Monopoly Fullstack game project. It provi
 ```bash
 git clone https://github.com/yourusername/monopoly-fullstack-backend.git
 cd monopoly-fullstack-backend
-2. Create a Virtual Environment
-bash
-Copy code
+```
+
+### 2. Create a Virtual Environment
+```bash
 pipenv install
 pipenv shell
-3. Configure Environment Variables
+```
+
+### 3. Configure Environment Variables
 Create a .env file in the project root and add:
 
 ini
-Copy code
+Copy code:
 FLASK_ENV=development
 DATABASE_URL=sqlite:///monopoly.db
 SECRET_KEY=your_secret_key
-4. Initialize the Database
-bash
-Copy code
+
+### 4. Initialize the Database
+```bash
 flask db init
 flask db migrate -m "Initial migration"
 flask db upgrade
-5. Run the Server
-bash
-Copy code
+```
+
+### 5. Run the Server
+```bash
 flask run
 By default, the API runs at:
-
-arduino
-Copy code
 http://localhost:5000
-📡 API Endpoints Overview
+```
+
+###  API Endpoints Overview
 Method	Endpoint	Description
 POST	/game/create	Start a new Monopoly game
 POST	/game/<id>/join	Add a player to the game
@@ -76,7 +79,7 @@ POST	/game/<id>/chance	Draw a Chance card
 POST	/game/<id>/community	Draw a Community Chest card
 POST	/game/<id>/jail	Handle jail actions (pay, skip, card)
 
-🧠 Game Logic Highlights
+### Game Logic Highlights
 Turn-Based Flow: Each player’s turn automatically rotates after their move.
 
 Randomized Dice Rolls: Dice results are generated securely server-side.
@@ -86,9 +89,9 @@ Bank Handling: Rent, taxes, and property costs are tracked in the bank’s balan
 Persistent Sessions: Each game is stored in the database for session recovery.
 
 
-🗂 Folder Structure
-bash
-Copy code
+### 🗂 Folder Structure
+```bash
+
 monopoly-fullstack-backend/
 │
 ├── app.py                # Main Flask app entry
@@ -99,7 +102,9 @@ monopoly-fullstack-backend/
 ├── Pipfile               # Dependencies
 ├── .env                  # Environment variables
 └── README.md             # Project documentation
-🧑‍💻 Contributors
+```
+
+### Contributors
 William Kuria and Mathew Kariuki.
 
 and contributors from the Monopoly project team.
